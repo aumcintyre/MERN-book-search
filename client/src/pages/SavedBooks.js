@@ -7,7 +7,7 @@ import { GET_ME } from '../utils/queries'
 import { REMOVE_BOOK } from '../utils/mutations'
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/client';
 
 const SavedBooks = () => {
   // const [userData, setUserData] = useState({});
@@ -67,7 +67,7 @@ const SavedBooks = () => {
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
 
@@ -80,7 +80,7 @@ const SavedBooks = () => {
       </Jumbotron>
       <Container>
         <h2>
-          {userData.savedBooks.length
+          {userData.savedBooks?.length
             ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>

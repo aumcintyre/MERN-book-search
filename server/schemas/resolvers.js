@@ -1,5 +1,4 @@
 const { AuthenticationError } = require('apollo-server-express');
-const { sign } = require('jsonwebtoken');
 const { User } = require('../models');
 const { signToken } = require('../utils/auth');
 
@@ -7,7 +6,7 @@ const resolvers = {
     Query: {
         me: async (parent, args, context) => {
             if (context.user) {
-                const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
+                const userData = await User.findOne({ _id: context.user._id }).select('-__v -password')
 
                 return userData;
             }
@@ -18,13 +17,17 @@ const resolvers = {
 
     Mutation: {
         addUser: async (parent, args) => {
-            const user = await User.create(args);
-            const token = signToken(user);
+            try {
+                const user = await User.create(args);
+                const token = signToken(user);
 
-            return { token, user };
+                return { token, user };
+            } catch (err) {
+                log.console(err);
+            }
         },
 
-        login: async (parent, { email, password }) => {
+        loginUser: async (parent, { email, password }) => {
             const user = await User.findOne({ email });
 
             if (!user) {
@@ -70,3 +73,5 @@ const resolvers = {
         },
     },
 };
+
+module.exports = resolvers;
