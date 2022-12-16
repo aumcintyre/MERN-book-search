@@ -18,12 +18,15 @@ const resolvers = {
     Mutation: {
         addUser: async (parent, args) => {
             try {
+
                 const user = await User.create(args);
                 const token = signToken(user);
 
                 return { token, user };
-            } catch (err) {
-                log.console(err);
+            }
+            catch (err) {
+                console.error(err);
+
             }
         },
 
@@ -44,17 +47,21 @@ const resolvers = {
             return { token, user };
         },
 
-        saveBook: async (parent, { bookData }, context) => {
+        saveBook: async (parent, args, context) => {
             if (context.user) {
                 const updatedUser = await User.findByIdAndUpdate(
                     { _id: context.user._id },
-                    { $push: { savedBooks: bookData } },
-                    { new: true }
+                    { $push: { savedBooks: args } },
+                    {
+                        new: true,
+                        runValidators: true
+                    }
                 );
-
+                console.log(updatedUser)
                 return updatedUser;
-            }
 
+            }
+            console.log(context)
             throw new AuthenticationError('Please log in first!');
         },
 
